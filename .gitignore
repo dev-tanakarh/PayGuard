@@ -4,10 +4,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-<<<<<<< HEAD
+
 #Configuration files
-*.yml
-*.properties
 src/main/resources/application.properties
 src/main/resources/application.yml
 
