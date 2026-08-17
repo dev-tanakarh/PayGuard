@@ -1,4 +1,4 @@
-package com.tanakarh.payguard.domain.transaction;
+package com.tanakarh.payguard.entity.transaction;
 
 public enum PaymentStatus {
     SUCCESS,

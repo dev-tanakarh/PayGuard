@@ -1,4 +1,4 @@
-package com.tanakarh.payguard.domain.user.merchant;
+package com.tanakarh.payguard.entity.user.customer;
 
 import java.time.Instant;
 
@@ -13,49 +13,45 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "merchants")
+@Table(name = "customers")
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class Merchant {
+@Builder
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "business_name", nullable = false, unique = true)
-    private String businessName;
+    @Column(name = "first_name")
+    private String firstName;
 
-    @Column(name = "business_email", nullable = false, unique = true)
-    private String businessEmail;
+    @Column(name = "last_name")
+    private String lastName;
 
-    private String phone;
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
 
-    @Column(name = "business_address", nullable = false, unique = true)
-    private String businessAddress;
-
-    @Column(name = "reg_number", nullable = false, unique = true)
-    private String registrationNumber;
+    @Column(name = "password", nullable = false)
+    private String password;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private MerchantStatus status;
+    private CustomerStatus status;
 
     @Column(name = "created_at")
     private Instant createdAt;
 
-     @Column(name = "updated_at")
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     @PrePersist
     void onCreate(){
         createdAt = Instant.now();
-        status = MerchantStatus.PENDING;
+        status = CustomerStatus.ACTIVE;
     }
 
     @PreUpdate

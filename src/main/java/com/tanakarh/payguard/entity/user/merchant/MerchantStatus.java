@@ -1,4 +1,4 @@
-package com.tanakarh.payguard.domain.user.merchant;
+package com.tanakarh.payguard.entity.user.merchant;
 
 public enum MerchantStatus {
     PENDING,

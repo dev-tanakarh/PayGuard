@@ -1,4 +1,4 @@
-package com.tanakarh.payguard.domain.user.customer;
+package com.tanakarh.payguard.entity.user.customer;
 
 public enum CustomerStatus {
     ACTIVE,
