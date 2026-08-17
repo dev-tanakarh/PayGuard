@@ -1,6 +1,6 @@
 package com.tanakarh.payguard.domain.transaction;
 
-public enum TransactionStatus {
+public enum PaymentStatus {
     SUCCESS,
     PENDING,
     FAILED
