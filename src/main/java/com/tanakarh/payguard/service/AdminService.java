@@ -1,5 +1,8 @@
 package com.tanakarh.payguard.service;
 
-public interface AdminService {
+import com.tanakarh.payguard.domain.dto.request.AdminDto;
+import com.tanakarh.payguard.domain.dto.response.AdminResponseDto;
 
+public interface AdminService {
+    AdminResponseDto createAdmin(AdminDto adminDto);
 }
