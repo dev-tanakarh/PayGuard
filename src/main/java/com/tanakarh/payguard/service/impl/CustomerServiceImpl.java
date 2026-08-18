@@ -2,13 +2,17 @@ package com.tanakarh.payguard.service.impl;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tanakarh.payguard.Repository.CustomerRepository;
+import com.tanakarh.payguard.Repository.UserRepository;
 import com.tanakarh.payguard.domain.dto.request.CustomerDto;
 import com.tanakarh.payguard.domain.dto.response.CustomerResponseDto;
+import com.tanakarh.payguard.domain.entity.user.Role;
+import com.tanakarh.payguard.domain.entity.user.User;
+import com.tanakarh.payguard.domain.entity.user.UserStatus;
 import com.tanakarh.payguard.domain.entity.user.customer.Customer;
-import com.tanakarh.payguard.domain.entity.user.customer.CustomerStatus;
 import com.tanakarh.payguard.exception.CustomerAlreadyExistsException;
 import com.tanakarh.payguard.exception.CustomerNotFoundException;
 import com.tanakarh.payguard.mapper.CustomerMapper;
@@ -23,16 +27,25 @@ public class CustomerServiceImpl implements CustomerService{
 
     private final CustomerMapper customerMapper;
     private final CustomerRepository customerRepo;
+    private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public CustomerResponseDto createCustomer(CustomerDto customerDto) {
-        if (customerRepo.existsByEmail(customerDto.email())) {
+        if (userRepo.existsByEmail(customerDto.email())) {
             throw new CustomerAlreadyExistsException("A customer with this email already exists");
     
         }
+        User user = new User();
+        user.setEmail(customerDto.email());
+        user.setPasswordHash(passwordEncoder.encode(customerDto.password()));
+        user.setStatus(UserStatus.ACTIVE);
+        user.setRole(Role.CUSTOMER);
+        userRepo.save(user);
+
         Customer customer = customerMapper.toEntity(customerDto);
-        customer.setStatus(CustomerStatus.ACTIVE);
+        customer.setUser(user);
         Customer savedCustomer = customerRepo.save(customer);
         return customerMapper.toResponseDto(savedCustomer);
     }
@@ -84,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService{
                                 .orElseThrow(() ->
                                     new CustomerNotFoundException("Customer not found")
                                 );
-        customer.setStatus(CustomerStatus.ACTIVE);
+        customer.getUser().setStatus(UserStatus.ACTIVE);
     }
 
     @Override
@@ -94,7 +107,7 @@ public class CustomerServiceImpl implements CustomerService{
                                 .orElseThrow(() ->
                                     new CustomerNotFoundException("Customer not found")
                                 );
-        customer.setStatus(CustomerStatus.DEACTIVATED);
+        customer.getUser().setStatus(UserStatus.DEACTIVATED);
     }
 
 }

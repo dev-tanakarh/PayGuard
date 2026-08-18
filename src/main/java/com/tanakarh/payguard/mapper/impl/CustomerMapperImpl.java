@@ -15,8 +15,6 @@ public class CustomerMapperImpl implements CustomerMapper {
         return Customer.builder()
                        .firstName(customerDto.firstName())
                        .lastName(customerDto.lastName())
-                       .email(customerDto.email())
-                       .password(customerDto.password())
                        .build();
     }
 
@@ -26,8 +24,6 @@ public class CustomerMapperImpl implements CustomerMapper {
             customer.getId(),
             customer.getFirstName(),
             customer.getLastName(),
-            customer.getEmail(),
-            customer.getStatus(),
             customer.getCreatedAt(),
             customer.getUpdatedAt()
         );
