@@ -12,14 +12,19 @@ public class AdminMapperImpl implements AdminMapper {
 
     @Override
     public Admin toEntity(AdminDto adminDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toEntity'");
+        return Admin.builder()
+                    .name(adminDto.name())
+                    .email(adminDto.email())
+                    .password(adminDto.password())
+                    .build();
     }
 
     @Override
     public AdminResponseDto toResponseDto(Admin admin) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toResponseDto'");
+       return new AdminResponseDto(
+        admin.getId(),
+        admin.getName(),
+        admin.getEmail()
+       );
     }
-
 }

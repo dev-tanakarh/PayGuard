@@ -12,14 +12,28 @@ public class MerchantMapperImpl implements MerchantMapper {
 
     @Override
     public Merchant toEntity(MerchantDto merchantDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toEntity'");
+        return Merchant.builder()
+                        .businessName(merchantDto.businessName())
+                        .businessAddress(merchantDto.businessAddress())
+                        .businessEmail(merchantDto.businessEmail())
+                        .registrationNumber(merchantDto.registrationNumber())
+                        .phone(merchantDto.phone())
+                        .build();
     }
 
     @Override
     public MerchantResponseDto toResponseDto(Merchant merchant) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toResponseDto'");
+        return new MerchantResponseDto(
+            merchant.getId(),
+            merchant.getBusinessName(),
+            merchant.getBusinessEmail(),
+            merchant.getPhone(),
+            merchant.getBusinessAddress(),
+            merchant.getRegistrationNumber(),
+            merchant.getStatus(),
+            merchant.getCreatedAt(),
+            merchant.getUpdatedAt()
+        );
     }
 
 }

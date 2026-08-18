@@ -12,14 +12,26 @@ public class PaymentMapperImpl implements PaymentMapper {
 
     @Override
     public Payment toEntity(PaymentRequestDto paymentRequestDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toEntity'");
+        Payment payment = new Payment();
+        payment.setAmount(paymentRequestDto.amount());
+        payment.setCurrency(paymentRequestDto.currency());
+
+        return payment;
     }
 
     @Override
     public PaymentResponseDto toResponseDto(Payment payment) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toResponseDto'");
+        return new PaymentResponseDto(
+            payment.getId(),
+            payment.getPaymentReference(),
+            payment.getCustomer().getId(),
+            payment.getMerchant().getId(),
+            payment.getAmount(),
+            payment.getCurrency(),
+            payment.getStatus(),
+            payment.getCreatedAt(),
+            payment.getUpdatedAt()
+        );
     }
 
 }

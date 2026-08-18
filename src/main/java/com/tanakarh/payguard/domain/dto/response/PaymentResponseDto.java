@@ -3,6 +3,8 @@ package com.tanakarh.payguard.domain.dto.response;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import com.tanakarh.payguard.domain.entity.payment.PaymentStatus;
+
 public record PaymentResponseDto(
     Long id,
     String paymentReference,
@@ -10,7 +12,7 @@ public record PaymentResponseDto(
     Long merchantId,
     BigDecimal amount,
     String currency,
-    String status,
+    PaymentStatus status,
     Instant createdAt,
     Instant updatedAt
 ) {

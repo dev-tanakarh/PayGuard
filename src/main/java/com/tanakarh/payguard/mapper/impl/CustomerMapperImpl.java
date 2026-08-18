@@ -12,14 +12,25 @@ public class CustomerMapperImpl implements CustomerMapper {
 
     @Override
     public Customer toEntity(CustomerDto customerDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toEntity'");
+        return Customer.builder()
+                       .firstName(customerDto.firstName())
+                       .lastName(customerDto.lastName())
+                       .email(customerDto.email())
+                       .password(customerDto.password())
+                       .build();
     }
 
     @Override
     public CustomerResponseDto toResponseDto(Customer customer) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toResponseDto'");
+        return new CustomerResponseDto(
+            customer.getId(),
+            customer.getFirstName(),
+            customer.getLastName(),
+            customer.getEmail(),
+            customer.getStatus(),
+            customer.getCreatedAt(),
+            customer.getUpdatedAt()
+        );
     }
 
 }
