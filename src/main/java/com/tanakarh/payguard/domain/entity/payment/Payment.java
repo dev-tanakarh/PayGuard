@@ -68,7 +68,6 @@ public class Payment {
     void onCreate() {
         createdAt = Instant.now();
         updatedAt = Instant.now();
-        status = PaymentStatus.PENDING;
     }
 
     @PreUpdate
