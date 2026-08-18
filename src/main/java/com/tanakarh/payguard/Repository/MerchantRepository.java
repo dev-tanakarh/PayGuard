@@ -10,8 +10,8 @@ import com.tanakarh.payguard.domain.entity.user.merchant.MerchantStatus;
 
 
 public interface MerchantRepository extends JpaRepository<Merchant, Long>{
-    Optional<Merchant> findByBusinessEmail(String businessEmail);
-    boolean existsByBusinessEmail(String businessEmail);
+    Optional<Merchant> findByUserEmail(String businessEmail);
+    boolean existsByUserEmail(String businessEmail);
     Optional<Merchant> findByRegistrationNumber(String registrationNumber);
-    List<Merchant> findByStatus(MerchantStatus status);
+    List<Merchant> findByUserStatus(MerchantStatus status);
 }

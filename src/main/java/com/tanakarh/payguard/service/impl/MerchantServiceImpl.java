@@ -65,7 +65,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Transactional
     public MerchantResponseDto getMerchantByEmail(String email) {
         Merchant merchant = merchantRepo
-                                .findByBusinessEmail(email)
+                                .findByUserEmail(email)
                                 .orElseThrow(
                                     () -> new UserNotFoundException("Merchant with email " + email + " not found")
                                 );

@@ -64,7 +64,7 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     public CustomerResponseDto getCustomerByEmail(String email) {
         Customer customer = customerRepo
-                            .findByEmail(email)
+                            .findByUserEmail(email)
                             .orElseThrow(() ->
                                 new UserNotFoundException("Customer not found")
                             );
