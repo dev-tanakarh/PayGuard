@@ -1,5 +1,7 @@
 package com.tanakarh.payguard.service;
 
+import java.util.List;
+
 import com.tanakarh.payguard.domain.dto.request.MerchantDto;
 import com.tanakarh.payguard.domain.dto.response.MerchantResponseDto;
 
@@ -9,6 +11,7 @@ public interface MerchantService {
     MerchantResponseDto getMerchantByEmail(String email);
     MerchantResponseDto getMerchantByRegistrationNumber(String registrationNumber);
     MerchantResponseDto updateMerchant(Long id, MerchantDto merchantDto);
+    List<MerchantResponseDto> getAllMerchants();
     void deleteMerchant(Long id);
     void activateMerchant(Long id);
     void deactivateMerchant(Long id);

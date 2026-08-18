@@ -13,8 +13,8 @@ import com.tanakarh.payguard.domain.entity.user.Role;
 import com.tanakarh.payguard.domain.entity.user.User;
 import com.tanakarh.payguard.domain.entity.user.UserStatus;
 import com.tanakarh.payguard.domain.entity.user.customer.Customer;
-import com.tanakarh.payguard.exception.CustomerAlreadyExistsException;
-import com.tanakarh.payguard.exception.CustomerNotFoundException;
+import com.tanakarh.payguard.exception.UserAlreadyExistsException;
+import com.tanakarh.payguard.exception.UserNotFoundException;
 import com.tanakarh.payguard.mapper.CustomerMapper;
 import com.tanakarh.payguard.service.CustomerService;
 
@@ -34,7 +34,7 @@ public class CustomerServiceImpl implements CustomerService{
     @Transactional
     public CustomerResponseDto createCustomer(CustomerDto customerDto) {
         if (userRepo.existsByEmail(customerDto.email())) {
-            throw new CustomerAlreadyExistsException("A customer with this email already exists");
+            throw new UserAlreadyExistsException("A customer with this email already exists");
     
         }
         User user = new User();
@@ -55,7 +55,7 @@ public class CustomerServiceImpl implements CustomerService{
         Customer customer = customerRepo
                                 .findById(id)
                                 .orElseThrow(() -> 
-                                       new CustomerNotFoundException("Customer not found")
+                                       new UserNotFoundException("Customer not found")
                                     );
 
         return customerMapper.toResponseDto(customer);
@@ -66,7 +66,7 @@ public class CustomerServiceImpl implements CustomerService{
         Customer customer = customerRepo
                             .findByEmail(email)
                             .orElseThrow(() ->
-                                new CustomerNotFoundException("Customer not found")
+                                new UserNotFoundException("Customer not found")
                             );
 
         return customerMapper.toResponseDto(customer);
@@ -76,14 +76,16 @@ public class CustomerServiceImpl implements CustomerService{
 
     @Override
     public List<CustomerResponseDto> getAllCustomers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllCustomers'");
+        List<Customer> customers = customerRepo.findAll();
+        return customers.stream()
+                        .map(customerMapper::toResponseDto)
+                        .toList();
     }
 
     @Override
     public CustomerResponseDto updateCustomer(Long id, CustomerDto customerDto) {
         if (!customerRepo.existsById(id)) {
-            throw new CustomerNotFoundException("Customer not found");
+            throw new UserNotFoundException("Customer not found");
         }
         Customer customer = customerMapper.toEntity(customerDto);
         Customer updatedCustomer = customerRepo.save(customer);
@@ -95,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService{
     public void activateCustomer(Long id) {
         Customer customer = customerRepo.findById(id)
                                 .orElseThrow(() ->
-                                    new CustomerNotFoundException("Customer not found")
+                                    new UserNotFoundException("Customer not found")
                                 );
         customer.getUser().setStatus(UserStatus.ACTIVE);
     }
@@ -105,7 +107,7 @@ public class CustomerServiceImpl implements CustomerService{
     public void deactivateCustomer(Long id) {
         Customer customer = customerRepo.findById(id)
                                 .orElseThrow(() ->
-                                    new CustomerNotFoundException("Customer not found")
+                                    new UserNotFoundException("Customer not found")
                                 );
         customer.getUser().setStatus(UserStatus.DEACTIVATED);
     }

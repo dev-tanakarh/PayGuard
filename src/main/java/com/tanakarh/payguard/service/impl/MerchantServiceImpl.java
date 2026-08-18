@@ -1,5 +1,7 @@
 package com.tanakarh.payguard.service.impl;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +13,12 @@ import com.tanakarh.payguard.domain.entity.user.Role;
 import com.tanakarh.payguard.domain.entity.user.User;
 import com.tanakarh.payguard.domain.entity.user.UserStatus;
 import com.tanakarh.payguard.domain.entity.user.merchant.Merchant;
-import com.tanakarh.payguard.exception.CustomerAlreadyExistsException;
+import com.tanakarh.payguard.exception.UserAlreadyExistsException;
+import com.tanakarh.payguard.exception.UserNotFoundException;
 import com.tanakarh.payguard.mapper.MerchantMapper;
 import com.tanakarh.payguard.service.MerchantService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,9 +31,10 @@ public class MerchantServiceImpl implements MerchantService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public MerchantResponseDto createMerchant(MerchantDto merchantDto) {
         if (userRepo.existsByEmail(merchantDto.businessEmail())) {
-            throw new CustomerAlreadyExistsException("A merchant with this email already exists");
+            throw new UserAlreadyExistsException("A merchant with this email already exists");
     
         }
         User user = new User();
@@ -46,31 +51,47 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
+    @Transactional
     public MerchantResponseDto getMerchantById(Long id) {
         Merchant merchant = merchantRepo
                                 .findById(id)
                                 .orElseThrow(
-                                    () -> new CustomerAlreadyExistsException("Merchant not found")
+                                    () -> new UserNotFoundException("Merchant not found")
                                 );
         return merchantMapper.toResponseDto(merchant);
     }
 
     @Override
+    @Transactional
     public MerchantResponseDto getMerchantByEmail(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMerchantByEmail'");
+        Merchant merchant = merchantRepo
+                                .findByBusinessEmail(email)
+                                .orElseThrow(
+                                    () -> new UserNotFoundException("Merchant with email " + email + " not found")
+                                );
+        return merchantMapper.toResponseDto(merchant);
     }
 
     @Override
+    @Transactional
     public MerchantResponseDto getMerchantByRegistrationNumber(String registrationNumber) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMerchantByRegistrationNumber'");
+        Merchant merchant = merchantRepo
+                                .findByRegistrationNumber(registrationNumber)
+                                .orElseThrow(
+                                    () -> new UserNotFoundException("Merchant with registration number " + registrationNumber + " not found")
+                                );
+        return merchantMapper.toResponseDto(merchant);
     }
 
     @Override
+    @Transactional
     public MerchantResponseDto updateMerchant(Long id, MerchantDto merchantDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateMerchant'");
+        if (!merchantRepo.existsById(id)) {
+            throw new UserNotFoundException("Merchant not found");
+        }
+        Merchant merchant = merchantMapper.toEntity(merchantDto);
+        Merchant updatedMerchant = merchantRepo.save(merchant);
+        return merchantMapper.toResponseDto(updatedMerchant);
     }
 
     @Override
@@ -81,26 +102,46 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public void activateMerchant(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'activateMerchant'");
+        Merchant merchant = merchantRepo.findById(id)
+                                .orElseThrow(() ->
+                                    new UserNotFoundException("Merchant not found")
+                                );
+        merchant.getUser().setStatus(UserStatus.ACTIVE);
     }
 
     @Override
     public void deactivateMerchant(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deactivateMerchant'");
+        Merchant merchant = merchantRepo.findById(id)
+                                .orElseThrow(() ->
+                                    new UserNotFoundException("Merchant not found")
+                                );
+        merchant.getUser().setStatus(UserStatus.DEACTIVATED);
     }
 
     @Override
     public void suspendMerchant(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'suspendMerchant'");
+        Merchant merchant = merchantRepo.findById(id)
+                                .orElseThrow(() ->
+                                    new UserNotFoundException("Merchant not found")
+                                );
+        merchant.getUser().setStatus(UserStatus.SUSPENDED);
     }
 
     @Override
     public void rejectMerchant(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'rejectMerchant'");
+        Merchant merchant = merchantRepo.findById(id)
+                                .orElseThrow(() ->
+                                    new UserNotFoundException("Merchant not found")
+                                );
+        merchant.getUser().setStatus(UserStatus.REJECTED);
+    }
+
+    @Override
+    public List<MerchantResponseDto> getAllMerchants() {
+        List<Merchant> merchants = merchantRepo.findAll();
+        return merchants.stream()
+                        .map(merchantMapper::toResponseDto)
+                        .toList();
     }
 
 
