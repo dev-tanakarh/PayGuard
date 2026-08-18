@@ -9,6 +9,7 @@ target/
 src/main/resources/application.properties
 src/main/resources/application.yml
 
+
 =======
 >>>>>>> 841ed31999aed03f1962a31e4caec608efb9ed1e
 ### STS ###
@@ -38,3 +39,5 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/resources/application.properties
+src/main/resources/application.properties
