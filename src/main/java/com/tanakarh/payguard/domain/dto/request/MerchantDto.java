@@ -5,7 +5,8 @@ public record MerchantDto(
     String businessEmail,
     String phone,
     String businessAddress,
-    String registrationNumber
+    String registrationNumber,
+    String password
 
 ) {
 

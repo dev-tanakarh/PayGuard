@@ -15,7 +15,6 @@ public class MerchantMapperImpl implements MerchantMapper {
         return Merchant.builder()
                         .businessName(merchantDto.businessName())
                         .businessAddress(merchantDto.businessAddress())
-                        .businessEmail(merchantDto.businessEmail())
                         .registrationNumber(merchantDto.registrationNumber())
                         .phone(merchantDto.phone())
                         .build();
@@ -26,11 +25,11 @@ public class MerchantMapperImpl implements MerchantMapper {
         return new MerchantResponseDto(
             merchant.getId(),
             merchant.getBusinessName(),
-            merchant.getBusinessEmail(),
+            merchant.getUser().getEmail(),
             merchant.getPhone(),
             merchant.getBusinessAddress(),
             merchant.getRegistrationNumber(),
-            merchant.getStatus(),
+            merchant.getUser().getStatus(),
             merchant.getCreatedAt(),
             merchant.getUpdatedAt()
         );

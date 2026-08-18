@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.tanakarh.payguard.domain.dto.request.AdminDto;
 import com.tanakarh.payguard.domain.dto.response.AdminResponseDto;
-import com.tanakarh.payguard.domain.entity.user.admin.Admin;
+import com.tanakarh.payguard.domain.entity.user.Admin;
 import com.tanakarh.payguard.mapper.AdminMapper;
 
 @Component

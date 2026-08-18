@@ -1,4 +1,4 @@
-package com.tanakarh.payguard.domain.entity.user.admin;
+package com.tanakarh.payguard.domain.entity.user;
 
 import java.util.UUID;
 

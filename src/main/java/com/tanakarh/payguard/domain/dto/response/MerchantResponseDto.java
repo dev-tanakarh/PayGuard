@@ -2,7 +2,7 @@ package com.tanakarh.payguard.domain.dto.response;
 
 import java.time.Instant;
 
-import com.tanakarh.payguard.domain.entity.user.merchant.MerchantStatus;
+import com.tanakarh.payguard.domain.entity.user.UserStatus;
 
 public record MerchantResponseDto(
     Long id,
@@ -11,7 +11,7 @@ public record MerchantResponseDto(
     String phone,
     String businessAddress,
     String registrationNumber,
-    MerchantStatus status,
+    UserStatus status,
     Instant createdAt,
     Instant updatedAt
 ) {
