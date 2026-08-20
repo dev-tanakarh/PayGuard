@@ -83,14 +83,17 @@ public class CustomerServiceImpl implements CustomerService{
     }
 
     @Override
+    @Transactional
     public CustomerResponseDto updateCustomer(Long id, CustomerDto customerDto) {
-        if (!customerRepo.existsById(id)) {
-            throw new UserNotFoundException("Customer not found");
-        }
-        Customer customer = customerMapper.toEntity(customerDto);
+        Customer customer = customerRepo.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Customer not found"));
+
+        // Updates only the non-null fields provided in customerDto
+        customerMapper.updateCustomerFromDto(customerDto, customer);
+
         Customer updatedCustomer = customerRepo.save(customer);
         return customerMapper.toResponseDto(updatedCustomer);
-    }
+}
 
     @Override
     @Transactional
@@ -110,6 +113,17 @@ public class CustomerServiceImpl implements CustomerService{
                                     new UserNotFoundException("Customer not found")
                                 );
         customer.getUser().setStatus(UserStatus.DEACTIVATED);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCustomer(Long id) {
+        Customer customer = customerRepo.findById(id)
+                                .orElseThrow(() ->
+                                    new UserNotFoundException("Customer not found")
+                                );
+        userRepo.delete(customer.getUser());
+        customerRepo.delete(customer);
     }
 
 }

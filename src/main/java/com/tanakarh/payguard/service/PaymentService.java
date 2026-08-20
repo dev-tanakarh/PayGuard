@@ -9,6 +9,8 @@ public interface PaymentService {
     PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto);
     PaymentResponseDto getPaymentById(Long id);
     List<PaymentResponseDto> getAllPayments();
+    List<PaymentResponseDto> getPaymentsByCustomerId(Long customerId);
+    List<PaymentResponseDto> getPaymentsByMerchantId(Long merchantId);
     void updatePayment(Long id, PaymentRequestDto paymentRequestDto);
     void deletePayment(Long id);
 }

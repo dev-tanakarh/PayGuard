@@ -104,4 +104,28 @@ public class PaymentServiceImpl implements PaymentService {
         return "PG-TXN-" + UUID.randomUUID().toString().substring(0, 16).toUpperCase();
     }
 
+    @Override
+    public List<PaymentResponseDto> getPaymentsByCustomerId(Long customerId) {
+        if(customerRepo.existsById(customerId)) {
+            List<Payment> payments = paymentRepository.findByCustomerId(customerId);
+            return payments.stream()
+                    .map(paymentMapper::toResponseDto)
+                    .toList();
+        } else {
+            throw new UserNotFoundException("Customer with ID " + customerId + " not found");
+        }
+    }
+
+    @Override
+    public List<PaymentResponseDto> getPaymentsByMerchantId(Long merchantId) {
+        if(merchantRepo.existsById(merchantId)) {
+            List<Payment> payments = paymentRepository.findByMerchantId(merchantId);
+            return payments.stream()
+                    .map(paymentMapper::toResponseDto)
+                    .toList();
+        } else {
+            throw new UserNotFoundException("Merchant with ID " + merchantId + " not found");
+        }
+    }
+
 }
