@@ -86,10 +86,12 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     @Transactional
     public MerchantResponseDto updateMerchant(Long id, MerchantDto merchantDto) {
-        if (!merchantRepo.existsById(id)) {
-            throw new UserNotFoundException("Merchant not found");
-        }
-        Merchant merchant = merchantMapper.toEntity(merchantDto);
+        Merchant merchant = merchantRepo.findById(id)
+                                .orElseThrow(() ->
+                                    new UserNotFoundException("Merchant not found")
+                                );
+
+        merchantMapper.updateMerchantFromDto(merchantDto, merchant);
         Merchant updatedMerchant = merchantRepo.save(merchant);
         return merchantMapper.toResponseDto(updatedMerchant);
     }
