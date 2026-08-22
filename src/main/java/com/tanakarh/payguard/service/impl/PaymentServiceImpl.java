@@ -128,4 +128,19 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    @Override
+    public List<PaymentResponseDto> getPaymentByStatus(String status) {
+        PaymentStatus paymentStatus;
+        try {
+            paymentStatus = PaymentStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid payment status: " + status);
+        }
+
+        List<Payment> payments = paymentRepository.findByStatus(paymentStatus);
+        return payments.stream()
+                .map(paymentMapper::toResponseDto)
+                .toList();
+    }
+
 }

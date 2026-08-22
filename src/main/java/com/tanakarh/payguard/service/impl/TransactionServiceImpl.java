@@ -120,4 +120,19 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    @Override
+    public List<TransactionResponseDto> getTransactionsByStatus(String status) {
+        TransactionStatus transactionStatus;
+        try {
+            transactionStatus = TransactionStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid transaction status: " + status);
+        }
+
+        List<Transaction> transactions = transactionRepo.findByStatus(transactionStatus);
+        return transactions.stream()
+                .map(transactionMapper::toResponseDto)
+                .toList();
+    }
+
 }

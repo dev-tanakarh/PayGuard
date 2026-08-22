@@ -5,12 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tanakarh.payguard.domain.dto.request.MerchantDto;
 import com.tanakarh.payguard.domain.dto.response.MerchantResponseDto;
-import com.tanakarh.payguard.domain.dto.response.PaymentResponseDto;
-import com.tanakarh.payguard.domain.dto.response.TransactionResponseDto;
 import com.tanakarh.payguard.service.MerchantService;
-import com.tanakarh.payguard.service.PaymentService;
-import com.tanakarh.payguard.service.TransactionService;
-
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class MerchantController {
 
     private final MerchantService merchantService;
-    private final PaymentService paymentService;
-    private final TransactionService transactionService;
 
     @PostMapping
     public MerchantResponseDto createMerchant(@RequestBody MerchantDto merchantDto) {
@@ -56,15 +49,6 @@ public class MerchantController {
         return merchantService.getAllMerchants();
     }
     
-    @GetMapping("/{id}/payments")
-    public List<PaymentResponseDto> getPaymentsByMerchantId(@PathVariable Long id) {
-        return paymentService.getPaymentsByMerchantId(id);
-    }
-
-    @GetMapping("/{id}/transactions")
-    public List<TransactionResponseDto> getTransactionsByMerchantId(@PathVariable Long id){
-        return transactionService.getTransactionByMerchantId(id);
-    }
 
     @PatchMapping("/{id}")
     public MerchantResponseDto updateMerchant(@PathVariable Long id, @RequestBody MerchantDto merchantDto){

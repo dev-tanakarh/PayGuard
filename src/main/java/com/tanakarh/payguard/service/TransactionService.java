@@ -12,7 +12,7 @@ public interface TransactionService {
     void deleteTransaction(Long id);
     List<TransactionResponseDto> getAllTransactions();
     List<TransactionResponseDto> getTransactionsByPaymentId(Long paymentId);
-    //List<TransactionResponseDto> getTransactionsByStatus(String status);
+    List<TransactionResponseDto> getTransactionsByStatus(String status);
     List<TransactionResponseDto> getTransactionByMerchantId(Long merchantId);
     List<TransactionResponseDto> getTransactionByCustomerId(Long customerId);
 

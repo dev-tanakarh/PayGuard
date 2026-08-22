@@ -11,6 +11,7 @@ public interface PaymentService {
     List<PaymentResponseDto> getAllPayments();
     List<PaymentResponseDto> getPaymentsByCustomerId(Long customerId);
     List<PaymentResponseDto> getPaymentsByMerchantId(Long merchantId);
+    List<PaymentResponseDto> getPaymentByStatus(String status);
     void updatePayment(Long id, PaymentRequestDto paymentRequestDto);
     void deletePayment(Long id);
 }

@@ -5,12 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tanakarh.payguard.domain.dto.request.CustomerDto;
 import com.tanakarh.payguard.domain.dto.response.CustomerResponseDto;
-import com.tanakarh.payguard.domain.dto.response.PaymentResponseDto;
-import com.tanakarh.payguard.domain.dto.response.TransactionResponseDto;
 import com.tanakarh.payguard.service.CustomerService;
-import com.tanakarh.payguard.service.PaymentService;
-import com.tanakarh.payguard.service.TransactionService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class CustomerController {
     private final CustomerService customerService;
-    private final PaymentService paymentService;
-    private final TransactionService transactionService;
-
+    
     @PostMapping
     public CustomerResponseDto createCustomer(@RequestBody CustomerDto customerDto) {
         // Call the service to create a customer
@@ -54,16 +47,6 @@ public class CustomerController {
     @GetMapping("/all")
     public Iterable<CustomerResponseDto> getAllCustomers() {
         return customerService.getAllCustomers();
-    }
-
-    @GetMapping("/{id}/payments")
-    public Iterable<PaymentResponseDto> getPaymentsByCustomerId(@PathVariable Long id) {
-        return paymentService.getPaymentsByCustomerId(id);
-    }
-
-    @GetMapping("/{id}/transactions")
-    public Iterable<TransactionResponseDto> getTransactionsByCustomerId(@PathVariable Long id) {
-        return transactionService.getTransactionByCustomerId(id);
     }
     
     @DeleteMapping("/{id}")
