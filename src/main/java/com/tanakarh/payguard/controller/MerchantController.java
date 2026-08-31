@@ -39,15 +39,15 @@ public class MerchantController {
         return merchantService.getMerchantById(id);
     }
 
-    @GetMapping
-    public MerchantResponseDto getMerchantByEmail(@RequestParam String email) {
-        return merchantService.getMerchantByEmail(email);
-    }
+    // @GetMapping
+    // public MerchantResponseDto getMerchantByEmail(@RequestParam String email) {
+    //     return merchantService.getMerchantByEmail(email);
+    // }
 
-    @GetMapping("/all")
-    public List<MerchantResponseDto> getAllMerchants() {
-        return merchantService.getAllMerchants();
-    }
+    // @GetMapping("/all")
+    // public List<MerchantResponseDto> getAllMerchants() {
+    //     return merchantService.getAllMerchants();
+    // }
     
 
     @PatchMapping("/{id}")
@@ -55,10 +55,10 @@ public class MerchantController {
         return merchantService.updateMerchant(id, merchantDto);
     }
     
-    @DeleteMapping("/{id}")
-    public void deleteMerchant(@PathVariable Long id){
-        merchantService.deleteMerchant(id);
-    }
+    // @DeleteMapping("/{id}")
+    // public void deleteMerchant(@PathVariable Long id){
+    //     merchantService.deleteMerchant(id);
+    // }
     
     
 }

@@ -34,24 +34,24 @@ public class CustomerController {
         return customerService.getCustomerById(id);
     }
 
-    @GetMapping
-    public CustomerResponseDto getCustomerByEmail(@RequestParam String email) {
-        return customerService.getCustomerByEmail(email);
-    }
+    // @GetMapping
+    // public CustomerResponseDto getCustomerByEmail(@RequestParam String email) {
+    //     return customerService.getCustomerByEmail(email);
+    // }
 
     @PatchMapping("/{id}")
     public CustomerResponseDto updateCustomer(@PathVariable Long id, @RequestBody CustomerDto customerDto) {
         return customerService.updateCustomer(id, customerDto);
     }
 
-    @GetMapping("/all")
-    public Iterable<CustomerResponseDto> getAllCustomers() {
-        return customerService.getAllCustomers();
-    }
+    // @GetMapping("/all")
+    // public Iterable<CustomerResponseDto> getAllCustomers() {
+    //     return customerService.getAllCustomers();
+    // }
     
-    @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
-    }
+    // @DeleteMapping("/{id}")
+    // public void deleteCustomer(@PathVariable Long id) {
+    //     customerService.deleteCustomer(id);
+    // }
     
 }
