@@ -18,4 +18,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>{
     boolean existsByPaymentReference(String paymentReference);
     List<Payment> findByMerchantId(Long merchantId);
     List<Payment> findByStatus(PaymentStatus status);
+    List<Payment> findTop10ByCustomerIdOrderByCreatedAtDesc(Long customerId);
+    List<Payment> findTop10ByOrderByCreatedAtDesc();
 }

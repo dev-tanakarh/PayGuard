@@ -21,4 +21,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>{
     List<Transaction> findByPaymentMerchantId(Long merchantId);
     List<Transaction> findByType(TransactionType type);
     List<Transaction> findByStatus(TransactionStatus status);
+    List<Transaction> findTop20ByPaymentCustomerIdOrderByCreatedAtDesc(Long customerId);
+    List<Transaction> findTop20ByOrderByCreatedAtDesc();
 }

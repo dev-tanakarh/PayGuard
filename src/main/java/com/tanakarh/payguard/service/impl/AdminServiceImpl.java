@@ -1,23 +1,27 @@
 package com.tanakarh.payguard.service.impl;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
 
 import com.tanakarh.payguard.Repository.AdminRepository;
 import com.tanakarh.payguard.Repository.CustomerRepository;
 import com.tanakarh.payguard.Repository.MerchantRepository;
+import com.tanakarh.payguard.Repository.PaymentRepository;
+import com.tanakarh.payguard.Repository.TransactionRepository;
 import com.tanakarh.payguard.Repository.UserRepository;
 import com.tanakarh.payguard.domain.dto.request.AdminDto;
 import com.tanakarh.payguard.domain.dto.response.AdminResponseDto;
+import com.tanakarh.payguard.domain.dto.response.CustomerActivityDto;
 import com.tanakarh.payguard.domain.dto.response.CustomerResponseDto;
 import com.tanakarh.payguard.domain.dto.response.MerchantResponseDto;
 import com.tanakarh.payguard.domain.dto.response.PaymentResponseDto;
 import com.tanakarh.payguard.domain.dto.response.TransactionResponseDto;
+import com.tanakarh.payguard.domain.entity.payment.Payment;
 import com.tanakarh.payguard.domain.entity.payment.PaymentStatus;
+import com.tanakarh.payguard.domain.entity.transaction.Transaction;
+import com.tanakarh.payguard.domain.entity.transaction.TransactionStatus;
 import com.tanakarh.payguard.domain.entity.user.Role;
 import com.tanakarh.payguard.domain.entity.user.User;
 import com.tanakarh.payguard.domain.entity.user.UserStatus;
@@ -29,6 +33,8 @@ import com.tanakarh.payguard.exception.UserNotFoundException;
 import com.tanakarh.payguard.mapper.AdminMapper;
 import com.tanakarh.payguard.mapper.CustomerMapper;
 import com.tanakarh.payguard.mapper.MerchantMapper;
+import com.tanakarh.payguard.mapper.PaymentMapper;
+import com.tanakarh.payguard.mapper.TransactionMapper;
 import com.tanakarh.payguard.service.AdminService;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +52,10 @@ public class AdminServiceImpl implements AdminService {
     private final MerchantRepository merchantRepo;
     private final CustomerMapper customerMapper;
     private final MerchantMapper merchantMapper;
+    private final PaymentRepository paymentRepo;
+    private final TransactionRepository transactionRepo;
+    private final TransactionMapper transactionMapper;
+    private final PaymentMapper paymentMapper;
 
     @Override
     public AdminResponseDto createAdmin(AdminDto adminDto) {
@@ -86,16 +96,6 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-    @Override
-    public CustomerResponseDto getCustomerById(Long customerId) {
-        Customer customer = customerRepo
-                                .findById(customerId)
-                                .orElseThrow(() -> 
-                                       new UserNotFoundException("Customer not found")
-                                    );
-
-        return customerMapper.toResponseDto(customer);
-    }
 
     @Override
     public List<CustomerResponseDto> getAllCustomers() {
@@ -128,41 +128,74 @@ public class AdminServiceImpl implements AdminService {
     
 
 
-    @Override
-    public PaymentResponseDto getPaymentById(Long paymentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPaymentById'");
-    }
+    
 
     @Override
     public List<PaymentResponseDto> getRecentPayments() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRecentPayments'");
+        List<Payment> payments = paymentRepo.findTop10ByOrderByCreatedAtDesc();
+        List<PaymentResponseDto> paymentResponseDtos = payments.stream()
+                                                                .map(paymentMapper::toResponseDto)
+                                                                .toList();
+
+        return paymentResponseDtos;
     }
 
     @Override
     public List<PaymentResponseDto> getPaymentsByStatus(PaymentStatus paymentStatus) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPaymentByStatus'");
+        List<Payment> payments = paymentRepo.findByStatus(paymentStatus);
+        List<PaymentResponseDto> paymentResponseDtos = payments.stream()
+                                                                .map(paymentMapper::toResponseDto)
+                                                                .toList();
+        return paymentResponseDtos;
     }
 
 
     @Override
     public List<TransactionResponseDto> getRecentTransactions() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRecentTransactions'");
+        List<Transaction> transactions = transactionRepo.findTop20ByOrderByCreatedAtDesc();
+        List<TransactionResponseDto> transactionResponseDtos = transactions.stream()
+                                                                .map(transactionMapper::toResponseDto)
+                                                                .toList();
+
+        return transactionResponseDtos;
+    }
+
+    
+
+    @Override
+    public CustomerActivityDto getCustomerActivity(Long customerId) {
+        Customer customer = customerRepo.findById(customerId)
+                                            .orElseThrow(() ->
+                                                new UserNotFoundException("Customer with ID: " + customerId + " not found")
+                                            );
+        
+        List<Payment> payments = paymentRepo.findTop10ByCustomerIdOrderByCreatedAtDesc(customerId);
+        List<Transaction> transactions = transactionRepo.findTop20ByPaymentCustomerIdOrderByCreatedAtDesc(customerId);
+        List<PaymentResponseDto> paymentResponseDtos = payments.stream()
+                                                                .map(paymentMapper::toResponseDto)
+                                                                .toList();
+
+        List<TransactionResponseDto> transactionResponseDtos = transactions.stream()
+                                                                .map(transactionMapper::toResponseDto)
+                                                                .toList();
+
+        return new CustomerActivityDto(customerId, 
+                                        customer.getUser().getEmail(), 
+                                        customer.getUser().getStatus(), 
+                                        paymentResponseDtos, 
+                                        transactionResponseDtos
+                                    );
+
+        
     }
 
     @Override
-    public TransactionResponseDto getTransactionByStatus(TransactionStatus transactionStatus) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTransactionByStatus'");
-    }
-
-    @Override
-    public void getCustomerActivity(Long customerId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCustomerActivity'");
+    public List<TransactionResponseDto> getTransactionByStatus(TransactionStatus transactionStatus) {
+        List<Transaction> transactions = transactionRepo.findByStatus(transactionStatus);
+        List<TransactionResponseDto> transactionResponseDtos = transactions.stream()
+                                                                .map(transactionMapper::toResponseDto)
+                                                                .toList();
+        return transactionResponseDtos;
     }
 
 }
