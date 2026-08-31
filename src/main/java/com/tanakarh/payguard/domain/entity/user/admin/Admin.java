@@ -1,6 +1,5 @@
 package com.tanakarh.payguard.domain.entity.user.admin;
 
-import java.util.UUID;
 
 import com.tanakarh.payguard.domain.entity.user.User;
 
@@ -27,7 +26,7 @@ import lombok.Setter;
 @Builder
 public class Admin {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)
