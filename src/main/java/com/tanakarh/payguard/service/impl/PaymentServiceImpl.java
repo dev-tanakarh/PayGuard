@@ -1,5 +1,6 @@
 package com.tanakarh.payguard.service.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import com.tanakarh.payguard.domain.entity.payment.PaymentStatus;
 import com.tanakarh.payguard.domain.entity.transaction.Transaction;
 import com.tanakarh.payguard.domain.entity.transaction.TransactionStatus;
 import com.tanakarh.payguard.domain.entity.transaction.TransactionType;
+import com.tanakarh.payguard.domain.entity.user.UserStatus;
 import com.tanakarh.payguard.domain.entity.user.customer.Customer;
 import com.tanakarh.payguard.domain.entity.user.merchant.Merchant;
 import com.tanakarh.payguard.exception.UserNotFoundException;
@@ -39,11 +41,36 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto) {
-        Customer customer = customerRepo.findById(paymentRequestDto.customerId())
-                                .orElseThrow(() -> new UserNotFoundException("Customer not found"));
-        
-        Merchant merchant = merchantRepo.findById(paymentRequestDto.merchantId())
-                                .orElseThrow(() -> new UserNotFoundException("Merchant not found"));
+        log.info("Creating payment from customer {} to merchant {}, amount: {}",
+             paymentRequestDto.customerId(), 
+             paymentRequestDto.merchantId(),
+             paymentRequestDto.amount());
+    
+    // Validate customer
+    Customer customer = customerRepo.findById(paymentRequestDto.customerId())
+        .orElseThrow(() -> new UserNotFoundException("Customer not found"));
+    
+    if (customer.getUser().getStatus() != UserStatus.ACTIVE) {
+        log.warn("Payment blocked - customer inactive: {}", customer.getId());
+        throw new InvalidOperationException("Customer account is inactive");
+    }
+    
+    // Validate merchant
+    Merchant merchant = merchantRepo.findById(paymentRequestDto.merchantId())
+        .orElseThrow(() -> new UserNotFoundException("Merchant not found"));
+    
+    if (merchant.getUser().getStatus() != UserStatus.ACTIVE) {
+        throw new InvalidOperationException("Merchant account is inactive");
+    }
+    
+    // Validate amount
+    if (paymentRequestDto.amount().compareTo(BigDecimal.ZERO) <= 0) {
+        throw new InvalidOperationException("Payment amount must be positive");
+    }
+    
+    if (paymentRequestDto.amount().compareTo(new BigDecimal("999999.99")) > 0) {
+        throw new InvalidOperationException("Payment amount exceeds maximum limit");
+    }
 
         Payment payment = paymentMapper.toEntity(paymentRequestDto);
         payment.setCustomer(customer);
@@ -129,10 +156,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<PaymentResponseDto> getPaymentByStatus(String status) {
+    public List<PaymentResponseDto> getPaymentByStatus(PaymentStatus status) {
         PaymentStatus paymentStatus;
         try {
-            paymentStatus = PaymentStatus.valueOf(status.toUpperCase());
+            paymentStatus = status;
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid payment status: " + status);
         }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.tanakarh.payguard.domain.dto.request.PaymentRequestDto;
 import com.tanakarh.payguard.domain.dto.response.PaymentResponseDto;
+import com.tanakarh.payguard.domain.entity.payment.PaymentStatus;
 
 public interface PaymentService {
     PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto);
@@ -11,7 +12,7 @@ public interface PaymentService {
     List<PaymentResponseDto> getAllPayments();
     List<PaymentResponseDto> getPaymentsByCustomerId(Long customerId);
     List<PaymentResponseDto> getPaymentsByMerchantId(Long merchantId);
-    List<PaymentResponseDto> getPaymentByStatus(String status);
+    List<PaymentResponseDto> getPaymentByStatus(PaymentStatus status);
     void updatePayment(Long id, PaymentRequestDto paymentRequestDto);
     void deletePayment(Long id);
 }

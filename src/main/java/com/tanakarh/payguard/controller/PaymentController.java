@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tanakarh.payguard.domain.dto.request.PaymentRequestDto;
 import com.tanakarh.payguard.domain.dto.response.PaymentResponseDto;
+import com.tanakarh.payguard.domain.entity.payment.PaymentStatus;
 import com.tanakarh.payguard.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class PaymentController {
     }
 
     @GetMapping("/status")
-    public List<PaymentResponseDto> getPaymentsByStatus(@RequestParam String status) {
+    public List<PaymentResponseDto> getPaymentsByStatus(@RequestParam PaymentStatus status) {
         return paymentService.getPaymentByStatus(status);
     }
 
