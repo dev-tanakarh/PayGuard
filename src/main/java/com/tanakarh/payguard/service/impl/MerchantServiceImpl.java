@@ -20,9 +20,11 @@ import com.tanakarh.payguard.service.MerchantService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MerchantServiceImpl implements MerchantService {
 
     private final MerchantMapper merchantMapper;
@@ -33,7 +35,9 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     @Transactional
     public MerchantResponseDto createMerchant(MerchantDto merchantDto) {
+        log.info("Creating merchant with email: {}", merchantDto.businessEmail());
         if (userRepo.existsByEmail(merchantDto.businessEmail())) {
+            log.warn("Merchant creation failed - email already exists: {}", merchantDto.businessEmail());
             throw new UserAlreadyExistsException("A merchant with this email already exists");
     
         }
@@ -42,33 +46,45 @@ public class MerchantServiceImpl implements MerchantService {
         user.setPasswordHash(passwordEncoder.encode(merchantDto.password()));
         user.setStatus(UserStatus.PENDING_APPROVAL);
         user.setRole(Role.MERCHANT);
-        userRepo.save(user);
+        User savedUser = userRepo.save(user);
+        log.debug("User saved with ID: {} and role: MERCHANT", savedUser.getId());
 
         Merchant merchant = merchantMapper.toEntity(merchantDto);
-        merchant.setUser(user);
+        merchant.setUser(savedUser);
         Merchant savedMerchant = merchantRepo.save(merchant);
+        log.info("Merchant created successfully - ID: {}, Business Name: {}", savedMerchant.getId(), merchantDto.businessName());
         return merchantMapper.toResponseDto(savedMerchant);
     }
 
     @Override
     @Transactional
     public MerchantResponseDto getMerchantById(Long id) {
+        log.debug("Fetching merchant with ID: {}", id);
         Merchant merchant = merchantRepo
                                 .findById(id)
                                 .orElseThrow(
-                                    () -> new UserNotFoundException("Merchant not found")
+                                    () -> {
+                                        log.error("Merchant not found with ID: {}", id);
+                                        return new UserNotFoundException("Merchant not found");
+                                    }
                                 );
+        log.debug("Merchant found: {}", merchant.getBusinessName());
         return merchantMapper.toResponseDto(merchant);
     }
 
     @Override
     @Transactional
     public MerchantResponseDto getMerchantByEmail(String email) {
+        log.debug("Fetching merchant with email: {}", email);
         Merchant merchant = merchantRepo
                                 .findByUserEmail(email)
                                 .orElseThrow(
-                                    () -> new UserNotFoundException("Merchant with email " + email + " not found")
+                                    () -> {
+                                        log.error("Merchant not found with email: {}", email);
+                                        return new UserNotFoundException("Merchant with email " + email + " not found");
+                                    }
                                 );
+        log.debug("Merchant found: {}", merchant.getBusinessName());
         return merchantMapper.toResponseDto(merchant);
     }
 

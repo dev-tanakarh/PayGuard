@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.tanakarh.payguard.domain.dto.request.PaymentRequestDto;
 import com.tanakarh.payguard.domain.dto.response.PaymentResponseDto;
@@ -23,7 +25,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping
-    public PaymentResponseDto createPayment(PaymentRequestDto paymentRequestDto) {
+    public PaymentResponseDto createPayment(@Valid @RequestBody PaymentRequestDto paymentRequestDto) {
         return paymentService.createPayment(paymentRequestDto);
     }
 

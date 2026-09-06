@@ -92,19 +92,28 @@ public class PaymentServiceImpl implements PaymentService {
         transaction.setStatus(TransactionStatus.PENDING);
 
         transactionRepo.save(transaction);
+        
+        log.info("Payment created successfully - Reference: {}, Status: {}", 
+                 payment.getPaymentReference(), payment.getStatus());
 
         return paymentMapper.toResponseDto(paymentRepository.save(payment));
     }
 
     @Override
     public PaymentResponseDto getPaymentById(Long id) {
+        log.debug("Fetching payment with ID: {}", id);
         Payment payment = paymentRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                                .orElseThrow(() -> {
+                                    log.error("Payment not found with ID: {}", id);
+                                    return new RuntimeException("Payment not found");
+                                });
+        log.debug("Payment found: {}", payment.getPaymentReference());
         return paymentMapper.toResponseDto(payment);
     }
 
     @Override
     public List<PaymentResponseDto> getAllPayments() {
+        log.debug("Fetching all payments");
         List<Payment> payments = paymentRepository.findAll();
         return payments.stream()
                         .map(paymentMapper::toResponseDto)
@@ -112,19 +121,31 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional
     public void updatePayment(Long id, PaymentRequestDto paymentRequestDto) {
+        log.info("Updating payment with ID: {}", id);
         Payment payment = paymentRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                                .orElseThrow(() -> {
+                                    log.error("Payment not found with ID: {}", id);
+                                    return new RuntimeException("Payment not found");
+                                });
         payment.setAmount(paymentRequestDto.amount());
         payment.setCurrency(paymentRequestDto.currency());
         paymentRepository.save(payment);
+        log.info("Payment updated successfully - ID: {}", id);
     }
 
     @Override
+    @Transactional
     public void deletePayment(Long id) {
+        log.info("Deleting payment with ID: {}", id);
         Payment payment = paymentRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                                .orElseThrow(() -> {
+                                    log.error("Payment not found with ID: {}", id);
+                                    return new RuntimeException("Payment not found");
+                                });
         paymentRepository.delete(payment);
+        log.info("Payment deleted successfully - ID: {}", id);
     }
         
     public String generatePaymentReference() {
@@ -137,24 +158,30 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentResponseDto> getPaymentsByCustomerId(Long customerId) {
+        log.debug("Fetching payments for customer ID: {}", customerId);
         if(customerRepo.existsById(customerId)) {
             List<Payment> payments = paymentRepository.findByCustomerId(customerId);
+            log.debug("Found {} payments for customer ID: {}", payments.size(), customerId);
             return payments.stream()
                     .map(paymentMapper::toResponseDto)
                     .toList();
         } else {
+            log.error("Customer not found with ID: {}", customerId);
             throw new UserNotFoundException("Customer with ID " + customerId + " not found");
         }
     }
 
     @Override
     public List<PaymentResponseDto> getPaymentsByMerchantId(Long merchantId) {
+        log.debug("Fetching payments for merchant ID: {}", merchantId);
         if(merchantRepo.existsById(merchantId)) {
             List<Payment> payments = paymentRepository.findByMerchantId(merchantId);
+            log.debug("Found {} payments for merchant ID: {}", payments.size(), merchantId);
             return payments.stream()
                     .map(paymentMapper::toResponseDto)
                     .toList();
         } else {
+            log.error("Merchant not found with ID: {}", merchantId);
             throw new UserNotFoundException("Merchant with ID " + merchantId + " not found");
         }
     }

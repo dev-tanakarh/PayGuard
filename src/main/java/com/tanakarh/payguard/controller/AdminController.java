@@ -21,6 +21,7 @@ import com.tanakarh.payguard.domain.entity.user.UserStatus;
 import com.tanakarh.payguard.service.AdminService;
 
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping
-    AdminResponseDto createAdmin(@RequestBody AdminDto adminDto){
+    AdminResponseDto createAdmin(@Valid @RequestBody AdminDto adminDto){
         return adminService.createAdmin(adminDto);
     }
 
@@ -55,23 +56,21 @@ public class AdminController {
     }
 
     @GetMapping("/recentPayments")
-    public List<PaymentResponseDto> getRecentPayments() {
+    public List<PaymentResponseDto> getRecentPayments(
+        @RequestParam(required = false) PaymentStatus status) {
+        if (status != null) {
+            return adminService.getPaymentsByStatus(status);
+        }
         return adminService.getRecentPayments();
     }
 
-    @GetMapping("/recentPayments")
-    public List<PaymentResponseDto> getRecentPaymentsByStatus(@RequestParam PaymentStatus status) {
-        return adminService.getPaymentsByStatus(status);
-    }
-
     @GetMapping("/recentTransactions")
-    public List<TransactionResponseDto> getRecentTransactions() {
+    public List<TransactionResponseDto> getRecentTransactions(
+        @RequestParam(required = false) TransactionStatus status) {
+        if (status != null) {
+            return adminService.getTransactionByStatus(status);
+        }
         return adminService.getRecentTransactions();
-    }
-
-    @GetMapping("/recentTransactions")
-    public List<TransactionResponseDto> getRecentPayments(@RequestParam TransactionStatus status) {
-        return adminService.getTransactionByStatus(status);
     }
     
     @GetMapping("/customerActivity/{customerId}")

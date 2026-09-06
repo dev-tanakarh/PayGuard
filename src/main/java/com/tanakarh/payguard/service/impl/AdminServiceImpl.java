@@ -38,10 +38,13 @@ import com.tanakarh.payguard.mapper.TransactionMapper;
 import com.tanakarh.payguard.service.AdminService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import jakarta.transaction.Transactional;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AdminServiceImpl implements AdminService {
 
     private final AdminRepository adminRepo;
@@ -58,8 +61,11 @@ public class AdminServiceImpl implements AdminService {
     private final PaymentMapper paymentMapper;
 
     @Override
+    @Transactional
     public AdminResponseDto createAdmin(AdminDto adminDto) {
+        log.info("Creating admin with email: {}", adminDto.email());
         if(adminRepo.existsByEmail(adminDto.email())){
+            log.warn("Admin creation failed - email already exists: {}", adminDto.email());
             throw new UserAlreadyExistsException("User already exists");
         }
         User user = new User();
@@ -67,32 +73,42 @@ public class AdminServiceImpl implements AdminService {
         user.setPasswordHash(passwordEncoder.encode(adminDto.password()));
         user.setStatus(UserStatus.ACTIVE);
         user.setRole(Role.ADMIN);
-        userRepo.save(user);
+        User savedUser = userRepo.save(user);
+        log.debug("User saved with ID: {} and role: ADMIN", savedUser.getId());
 
         Admin admin = adminMapper.toEntity(adminDto);
-        admin.setUser(user);
+        admin.setUser(savedUser);
         Admin savedAdmin = adminRepo.save(admin);
+        log.info("Admin created successfully - ID: {}", savedAdmin.getId());
         return adminMapper.toResponseDto(savedAdmin);
 
     }
 
     @Override
+    @Transactional
     public void deleteAdmin(Long adminId) {
+        log.info("Deleting admin with ID: {}", adminId);
         Admin admin = adminRepo.findById(adminId)
-                                .orElseThrow(() ->
-                                    new UserNotFoundException("User not found")
-                                );
+                                .orElseThrow(() -> {
+                                    log.error("Admin not found with ID: {}", adminId);
+                                    return new UserNotFoundException("User not found");
+                                });
         userRepo.delete(admin.getUser());
         adminRepo.delete(admin);
+        log.info("Admin deleted successfully - ID: {}", adminId);
     }
 
     @Override
+    @Transactional
     public void changeUserStatus(Long userId, UserStatus status) {
+        log.info("Changing user status for ID: {} to {}", userId, status);
         User user = userRepo.findById(userId)
-                            .orElseThrow(() ->
-                             new UserNotFoundException("User not Found")
-                        );
+                            .orElseThrow(() -> {
+                                log.error("User not found with ID: {}", userId);
+                                return new UserNotFoundException("User not Found");
+                            });
         user.setStatus(status);
+        log.info("User status changed successfully - ID: {}, New Status: {}", userId, status);
     }
 
 

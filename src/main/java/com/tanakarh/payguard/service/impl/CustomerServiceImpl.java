@@ -20,9 +20,11 @@ import com.tanakarh.payguard.service.CustomerService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerServiceImpl implements CustomerService{
 
     private final CustomerMapper customerMapper;
@@ -33,7 +35,9 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     @Transactional
     public CustomerResponseDto createCustomer(CustomerDto customerDto) {
+        log.info("Creating customer with email: {}", customerDto.email());
         if (userRepo.existsByEmail(customerDto.email())) {
+            log.warn("Customer creation failed - email already exists: {}", customerDto.email());
             throw new UserAlreadyExistsException("A customer with this email already exists");
     
         }
@@ -42,22 +46,26 @@ public class CustomerServiceImpl implements CustomerService{
         user.setPasswordHash(passwordEncoder.encode(customerDto.password()));
         user.setStatus(UserStatus.ACTIVE);
         user.setRole(Role.CUSTOMER);
-        userRepo.save(user);
+        User savedUser = userRepo.save(user);
+        log.debug("User saved with ID: {} and role: CUSTOMER", savedUser.getId());
 
         Customer customer = customerMapper.toEntity(customerDto);
-        customer.setUser(user);
+        customer.setUser(savedUser);
         Customer savedCustomer = customerRepo.save(customer);
+        log.info("Customer created successfully - ID: {}, Email: {}", savedCustomer.getId(), savedCustomer.getUser().getEmail());
         return customerMapper.toResponseDto(savedCustomer);
     }
 
     @Override
     public CustomerResponseDto getCustomerById(Long id) {
+        log.debug("Fetching customer with ID: {}", id);
         Customer customer = customerRepo
                                 .findById(id)
-                                .orElseThrow(() -> 
-                                       new UserNotFoundException("Customer not found")
-                                    );
-
+                                .orElseThrow(() -> {
+                                    log.error("Customer not found with ID: {}", id);
+                                    return new UserNotFoundException("Customer not found");
+                                });
+        log.debug("Customer found: {}", customer.getUser().getEmail());
         return customerMapper.toResponseDto(customer);
     }
 
@@ -85,13 +93,16 @@ public class CustomerServiceImpl implements CustomerService{
     @Override
     @Transactional
     public CustomerResponseDto updateCustomer(Long id, CustomerDto customerDto) {
+        log.info("Updating customer with ID: {}", id);
         Customer customer = customerRepo.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("Customer not found"));
+                .orElseThrow(() -> {
+                    log.error("Customer not found with ID: {}", id);
+                    return new UserNotFoundException("Customer not found");
+                });
 
-        // Updates only the non-null fields provided in customerDto
         customerMapper.updateCustomerFromDto(customerDto, customer);
-
         Customer updatedCustomer = customerRepo.save(customer);
+        log.info("Customer updated successfully - ID: {}", id);
         return customerMapper.toResponseDto(updatedCustomer);
 }
 

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.tanakarh.payguard.domain.dto.request.TransactionDto;
 import com.tanakarh.payguard.domain.dto.response.TransactionResponseDto;
@@ -23,7 +24,7 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping
-    public TransactionResponseDto createTransaction(@RequestBody TransactionDto transactionDto) {
+    public TransactionResponseDto createTransaction(@Valid @RequestBody TransactionDto transactionDto) {
         return transactionService.createTransaction(transactionDto);
     }
 
