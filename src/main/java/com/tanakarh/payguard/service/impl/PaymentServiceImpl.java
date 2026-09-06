@@ -20,13 +20,17 @@ import com.tanakarh.payguard.domain.entity.transaction.TransactionType;
 import com.tanakarh.payguard.domain.entity.user.UserStatus;
 import com.tanakarh.payguard.domain.entity.user.customer.Customer;
 import com.tanakarh.payguard.domain.entity.user.merchant.Merchant;
+import com.tanakarh.payguard.exception.InvalidOperationException;
 import com.tanakarh.payguard.exception.UserNotFoundException;
 import com.tanakarh.payguard.mapper.PaymentMapper;
 import com.tanakarh.payguard.service.PaymentService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
