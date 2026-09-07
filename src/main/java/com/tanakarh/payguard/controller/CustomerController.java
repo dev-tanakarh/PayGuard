@@ -17,14 +17,13 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
 public class CustomerController {
     private final CustomerService customerService;
     
     @PostMapping
     public CustomerResponseDto createCustomer(@Valid @RequestBody CustomerDto customerDto) {
-        // Call the service to create a customer
         return customerService.createCustomer(customerDto);
     }
 
@@ -33,24 +32,8 @@ public class CustomerController {
         return customerService.getCustomerById(id);
     }
 
-    // @GetMapping
-    // public CustomerResponseDto getCustomerByEmail(@RequestParam String email) {
-    //     return customerService.getCustomerByEmail(email);
-    // }
-
     @PatchMapping("/{id}")
     public CustomerResponseDto updateCustomer(@PathVariable Long id, @Valid @RequestBody CustomerDto customerDto) {
         return customerService.updateCustomer(id, customerDto);
     }
-
-    // @GetMapping("/all")
-    // public Iterable<CustomerResponseDto> getAllCustomers() {
-    //     return customerService.getAllCustomers();
-    // }
-    
-    // @DeleteMapping("/{id}")
-    // public void deleteCustomer(@PathVariable Long id) {
-    //     customerService.deleteCustomer(id);
-    // }
-    
 }

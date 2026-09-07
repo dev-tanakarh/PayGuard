@@ -18,7 +18,7 @@ import com.tanakarh.payguard.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("api/transaction")
+@RequestMapping("/api/v1/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
     private final TransactionService transactionService;

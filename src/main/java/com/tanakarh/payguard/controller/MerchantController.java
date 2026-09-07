@@ -19,9 +19,8 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@RequestMapping("api/merchant")
+@RequestMapping("/api/v1/merchants")
 @RequiredArgsConstructor
-
 public class MerchantController {
 
     private final MerchantService merchantService;
@@ -36,26 +35,9 @@ public class MerchantController {
         return merchantService.getMerchantById(id);
     }
 
-    // @GetMapping
-    // public MerchantResponseDto getMerchantByEmail(@RequestParam String email) {
-    //     return merchantService.getMerchantByEmail(email);
-    // }
-
-    // @GetMapping("/all")
-    // public List<MerchantResponseDto> getAllMerchants() {
-    //     return merchantService.getAllMerchants();
-    // }
-    
-
     @PatchMapping("/{id}")
-    public MerchantResponseDto updateMerchant(@PathVariable Long id, @RequestBody MerchantDto merchantDto){
+    public MerchantResponseDto updateMerchant(@PathVariable Long id, @Valid @RequestBody MerchantDto merchantDto){
         return merchantService.updateMerchant(id, merchantDto);
     }
-    
-    // @DeleteMapping("/{id}")
-    // public void deleteMerchant(@PathVariable Long id){
-    //     merchantService.deleteMerchant(id);
-    // }
-    
-    
 }
+

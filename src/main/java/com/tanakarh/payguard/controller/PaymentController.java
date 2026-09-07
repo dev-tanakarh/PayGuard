@@ -19,7 +19,7 @@ import com.tanakarh.payguard.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("api/payment")
+@RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;

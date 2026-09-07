@@ -4,15 +4,19 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-
-#Configuration files
+# Configuration files - NEVER commit application properties with real credentials!
 src/main/resources/application.properties
+src/main/resources/application-*.properties
 src/main/resources/application.yml
+src/main/resources/application-*.yml
+!src/main/resources/application-example.properties
 
+# Environment files
+.env
+.env.local
+.env.*.local
 
-=======
->>>>>>> 841ed31999aed03f1962a31e4caec608efb9ed1e
-### STS ###
+# IDE and Build Files
 .apt_generated
 .classpath
 .factorypath
@@ -39,5 +43,3 @@ build/
 
 ### VS Code ###
 .vscode/
-src/main/resources/application.properties
-src/main/resources/application.properties
